@@ -13,11 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $friend_id = $_POST['friend_id'];
         $message = $_POST['message'];
 
-        // Debugging statements
-        echo "User ID: " . $user_id . "<br>";
-        echo "Friend ID: " . $friend_id . "<br>";
-        echo "Message: " . $message . "<br>";
-
         $stmt = $conn->prepare("INSERT INTO messages (user_id, friend_id, message, `read`, timestamp) VALUES (?, ?, ?, 0, NOW())");
         if ($stmt === false) {
             die('Prepare failed: ' . htmlspecialchars($conn->error));
