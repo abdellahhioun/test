@@ -3,8 +3,7 @@ include 'db_conn.php';
 session_start();
 
 if (isset($_SESSION['username'])) {
-    echo "Welcome, " . $_SESSION['username'] . "!<br>";
-    echo "<img src='assets/default.png' alt='Profile Picture' style='width: 50px; height: 50px; border-radius: 50%;'><br>";
+    echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!<br>";
     echo "<a href='logout.php'>Logout</a>";
 } else {
 ?>
@@ -65,7 +64,7 @@ if (isset($_SESSION['username'])) {
                         messageElement.classList.add('message');
 
                         const pfpElement = document.createElement('img');
-                        pfpElement.src = `assets/default.png`;
+                        pfpElement.src = message.pfp;
                         pfpElement.alt = 'Profile Picture';
                         pfpElement.classList.add('pfp');
 
@@ -95,17 +94,14 @@ if (isset($_SESSION['username'])) {
         document.getElementById('message-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const message = document.getElementById('message').value;
-            const friendId = document.getElementById('friend-id').value; // Ensure this element exists and has a value
-
-            console.log('Sending message:', message);
-            console.log('Friend ID:', friendId);
+            const friendId = document.getElementById('friend-id').value;
 
             fetch('send_message.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `message=${encodeURIComponent(message)}&friend_id=${encodeURIComponent(friendId)}`
+                body: `message=${message}&friend_id=${friendId}`
             })
             .then(response => response.text())
             .then(data => {
@@ -138,7 +134,7 @@ if (isset($_SESSION['username'])) {
                             userElement.classList.add('user');
 
                             const pfpElement = document.createElement('img');
-                            pfpElement.src = `assets/default.png`;
+                            pfpElement.src = user.pfp;
                             pfpElement.alt = 'Profile Picture';
                             pfpElement.classList.add('pfp');
 
@@ -190,7 +186,7 @@ if (isset($_SESSION['username'])) {
                         friendElement.classList.add('friend');
 
                         const pfpElement = document.createElement('img');
-                        pfpElement.src = `path/to/pfp/${friend.pfp}`;
+                        pfpElement.src = friend.pfp;
                         pfpElement.alt = 'Profile Picture';
                         pfpElement.classList.add('pfp');
 
