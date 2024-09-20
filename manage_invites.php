@@ -1,43 +1,39 @@
 <?php
 include 'db_conn.php';
-session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    echo "User not logged in.";
-    exit;
-}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $inviteId = $_POST['invite_id'];
+    $action = $_POST['action'];
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $invite_id = $_POST['invite_id'];
-    $action = $_POST['action']; // 'accept' or 'reject'
-
-    if ($action == 'accept') {
+    if ($action === 'accept') {
+        // Update the invite status to accepted
         $stmt = $conn->prepare("UPDATE invitations SET status = 'accepted' WHERE id = ?");
-        $stmt->bind_param("i", $invite_id);
+        $stmt->bind_param("i", $inviteId);
         $stmt->execute();
 
-        // Add to friends table
+        // Fetch the sender and receiver IDs from the invite
         $stmt = $conn->prepare("SELECT sender_id, receiver_id FROM invitations WHERE id = ?");
-        $stmt->bind_param("i", $invite_id);
+        $stmt->bind_param("i", $inviteId);
         $stmt->execute();
-        $stmt->bind_result($sender_id, $receiver_id);
+        $stmt->bind_result($senderId, $receiverId);
         $stmt->fetch();
+        $stmt->close();
 
-        // Add friendship in both directions
+        // Insert the friendship into the friends table
         $stmt = $conn->prepare("INSERT INTO friends (user_id, friend_id) VALUES (?, ?), (?, ?)");
-        $stmt->bind_param("iiii", $sender_id, $receiver_id, $receiver_id, $sender_id);
+        $stmt->bind_param("iiii", $senderId, $receiverId, $receiverId, $senderId);
         $stmt->execute();
-    } else if ($action == 'reject') {
+        $stmt->close();
+    } elseif ($action === 'reject') {
+        // Update the invite status to rejected
         $stmt = $conn->prepare("UPDATE invitations SET status = 'rejected' WHERE id = ?");
-        $stmt->bind_param("i", $invite_id);
+        $stmt->bind_param("i", $inviteId);
         $stmt->execute();
+        $stmt->close();
     }
 
-    echo "Invitation $action successfully!";
-    $stmt->close();
+    echo "Invite $action successfully.";
 } else {
     echo "Invalid request method.";
 }
-
-$conn->close();
 ?>
