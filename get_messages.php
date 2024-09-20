@@ -1,5 +1,5 @@
 <?php
-require 'db_conn.php';
+include 'db_conn.php';
 
 $sql = "SELECT username, message, profile_pic, timestamp FROM messages ORDER BY timestamp DESC";
 $result = $conn->query($sql);
