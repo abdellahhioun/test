@@ -2,7 +2,7 @@
 include 'db_conn.php';
 session_start();
 
-$query = "SELECT messages.message, messages.timestamp, users.username, users.pfp 
+$query = "SELECT messages.message, messages.timestamp, users.username, COALESCE(users.pfp, 'assets/default.png') AS pfp 
           FROM messages 
           JOIN users ON messages.user_id = users.id 
           ORDER BY messages.timestamp DESC";
