@@ -22,23 +22,6 @@ $friend_requests = [];
 while ($row = $result->fetch_assoc()) {
     $friend_requests[] = $row;
 }
-
-$stmt->close();
-
-// Fetch unread messages
-$stmt = $conn->prepare("SELECT messages.message, messages.timestamp, users.username, users.pfp 
-                        FROM messages 
-                        JOIN users ON messages.user_id = users.id 
-                        WHERE messages.friend_id = ? AND messages.read = 0");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$unread_messages = [];
-while ($row = $result->fetch_assoc()) {
-    $unread_messages[] = $row;
-}
-
 $stmt->close();
 $conn->close();
 ?>
@@ -49,49 +32,28 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notifications</title>
-    <style>
-        .notification { margin-bottom: 10px; }
-        .pfp { width: 30px; height: 30px; border-radius: 50%; }
-        .username { font-weight: bold; margin-right: 5px; }
-        .text { margin-right: 5px; }
-        .timestamp { color: gray; font-size: 0.8em; }
-    </style>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Notifications</h1>
-
-    <h2>Friend Requests</h2>
-    <div id="friend-requests">
-        <?php if (count($friend_requests) > 0): ?>
+    <div class="container mt-4">
+        <h1>Notifications</h1>
+        <ul class="list-group">
             <?php foreach ($friend_requests as $request): ?>
-                <div class="notification">
-                    <img src="path/to/pfp/<?php echo htmlspecialchars($request['pfp']); ?>" alt="Profile Picture" class="pfp">
-                    <span class="username"><?php echo htmlspecialchars($request['username']); ?></span>
-                    <button onclick="manageInvite(<?php echo $request['id']; ?>, 'accept')">Accept</button>
-                    <button onclick="manageInvite(<?php echo $request['id']; ?>, 'reject')">Reject</button>
-                </div>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <img src="<?php echo htmlspecialchars($request['pfp']); ?>" alt="Profile Picture" class="rounded-circle" style="width: 30px; height: 30px;">
+                    <span><?php echo htmlspecialchars($request['username']); ?></span>
+                    <div>
+                        <button class="btn btn-success btn-sm" onclick="manageInvite(<?php echo $request['id']; ?>, 'accept')">Accept</button>
+                        <button class="btn btn-danger btn-sm" onclick="manageInvite(<?php echo $request['id']; ?>, 'reject')">Reject</button>
+                    </div>
+                </li>
             <?php endforeach; ?>
-        <?php else: ?>
-            <p>No friend requests.</p>
-        <?php endif; ?>
+        </ul>
     </div>
 
-    <h2>Unread Messages</h2>
-    <div id="unread-messages">
-        <?php if (count($unread_messages) > 0): ?>
-            <?php foreach ($unread_messages as $message): ?>
-                <div class="notification">
-                    <img src="path/to/pfp/<?php echo htmlspecialchars($message['pfp']); ?>" alt="Profile Picture" class="pfp">
-                    <span class="username"><?php echo htmlspecialchars($message['username']); ?></span>
-                    <span class="text"><?php echo htmlspecialchars($message['message']); ?></span>
-                    <span class="timestamp"><?php echo htmlspecialchars($message['timestamp']); ?></span>
-                </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <p>No unread messages.</p>
-        <?php endif; ?>
-    </div>
-
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         function manageInvite(inviteId, action) {
             fetch('manage_invites.php', {
