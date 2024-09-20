@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // Fetch friend requests
-$stmt = $conn->prepare("SELECT invitations.id, users.username, users.pfp 
+$stmt = $conn->prepare("SELECT invitations.id, users.username, COALESCE(users.pfp, 'assets/default.png') AS pfp 
                         FROM invitations 
                         JOIN users ON invitations.sender_id = users.id 
                         WHERE invitations.receiver_id = ? AND invitations.status = 'pending'");
@@ -27,7 +27,7 @@ while ($row = $result->fetch_assoc()) {
 }
 
 // Fetch unread messages (this part assumes you have a way to track read/unread messages)
-$stmt = $conn->prepare("SELECT messages.message, messages.timestamp, users.username, users.pfp 
+$stmt = $conn->prepare("SELECT messages.message, messages.timestamp, users.username, COALESCE(users.pfp, 'assets/default.png') AS pfp 
                         FROM messages 
                         JOIN users ON messages.user_id = users.id 
                         WHERE messages.friend_id = ? AND messages.read = 0");
