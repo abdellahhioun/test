@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-$stmt = $conn->prepare("SELECT users.id, users.username, users.pfp 
+$stmt = $conn->prepare("SELECT users.id, users.username, COALESCE(users.pfp, 'assets/default.png') AS pfp 
                         FROM friends 
                         JOIN users ON friends.friend_id = users.id 
                         WHERE friends.user_id = ?");
