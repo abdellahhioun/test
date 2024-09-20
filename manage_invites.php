@@ -19,8 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->fetch();
         $stmt->close();
 
-        // Insert the friendship into the friends table
-        $stmt = $conn->prepare("INSERT INTO friends (user_id, friend_id) VALUES (?, ?), (?, ?)");
+        // Insert the friendship into the friends table, ignoring duplicates
+        $stmt = $conn->prepare("INSERT IGNORE INTO friends (user_id, friend_id) VALUES (?, ?), (?, ?)");
         $stmt->bind_param("iiii", $senderId, $receiverId, $receiverId, $senderId);
         $stmt->execute();
         $stmt->close();
