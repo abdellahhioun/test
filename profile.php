@@ -72,21 +72,32 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($userUsername); ?>'s Profile</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1><?php echo htmlspecialchars($userUsername); ?>'s Profile</h1>
-    <img src="<?php echo htmlspecialchars($userPfp); ?>" alt="Profile Picture" style="width: 100px; height: 100px; border-radius: 50%;">
-    <p>Username: <?php echo htmlspecialchars($userUsername); ?></p>
+    <div class="container mt-4">
+        <h1><?php echo htmlspecialchars($userUsername); ?>'s Profile</h1>
+        <img src="<?php echo htmlspecialchars($userPfp); ?>" alt="Profile Picture" class="rounded-circle" style="width: 100px; height: 100px;">
+        <p>Username: <?php echo htmlspecialchars($userUsername); ?></p>
 
-    <?php if ($currentUser == $userId): ?>
-        <h2>Edit Profile</h2>
-        <form action="profile.php?username=<?php echo htmlspecialchars($userUsername); ?>" method="post" enctype="multipart/form-data">
-            <label for="username">New Username:</label>
-            <input type="text" name="username" id="username" value="<?php echo htmlspecialchars($userUsername); ?>"><br>
-            <label for="pfp">New Profile Picture:</label>
-            <input type="file" name="pfp" id="pfp"><br>
-            <button type="submit">Update Profile</button>
-        </form>
-    <?php endif; ?>
+        <?php if ($currentUser == $userId): ?>
+            <h2>Edit Profile</h2>
+            <form action="profile.php?username=<?php echo htmlspecialchars($userUsername); ?>" method="post" enctype="multipart/form-data" class="form-inline">
+                <div class="form-group">
+                    <label for="username">New Username:</label>
+                    <input type="text" name="username" id="username" class="form-control ml-2" value="<?php echo htmlspecialchars($userUsername); ?>">
+                </div>
+                <div class="form-group ml-2">
+                    <label for="pfp">New Profile Picture:</label>
+                    <input type="file" name="pfp" id="pfp" class="form-control ml-2">
+                </div>
+                <button type="submit" class="btn btn-primary ml-2">Update Profile</button>
+            </form>
+        <?php endif; ?>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
