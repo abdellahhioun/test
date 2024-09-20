@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $search = $_GET['search'] ?? '';
 
-$stmt = $conn->prepare("SELECT id, username, pfp FROM users WHERE username LIKE ? AND id != ?");
+$stmt = $conn->prepare("SELECT id, username, COALESCE(pfp, 'assets/default.png') AS pfp FROM users WHERE username LIKE ? AND id != ?");
 $searchTerm = '%' . $search . '%';
 $user_id = $_SESSION['user_id'];
 $stmt->bind_param("si", $searchTerm, $user_id);
