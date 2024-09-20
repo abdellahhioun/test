@@ -4,13 +4,19 @@ session_start();
 
 if (isset($_SESSION['username'])) {
     echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!<br>";
-    echo "<a href='logout.php'>Logout</a>";
+    echo "<a href='logout.php' class='btn btn-danger'>Logout</a>";
 } else {
 ?>
-    <form method="POST" action="login.php">
-        Username: <input type="text" name="username" required><br>
-        Password: <input type="password" name="password" required><br>
-        <button type="submit">Login</button>
+    <form method="POST" action="login.php" class="form-inline">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
     </form>
 <?php
 }
@@ -21,6 +27,7 @@ if (isset($_SESSION['username'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat App</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .message { margin-bottom: 10px; }
         .pfp { width: 30px; height: 30px; border-radius: 50%; }
@@ -31,26 +38,31 @@ if (isset($_SESSION['username'])) {
     </style>
 </head>
 <body>
-    <div id="messages-container"></div>
-    <form id="message-form">
-        <input type="text" id="message" required>
-        <input type="hidden" id="friend-id" value="1"> <!-- Ensure this value is set correctly -->
-        <button type="submit">Send</button>
-    </form>
+    <div class="container mt-4">
+        <div id="messages-container" class="mb-4"></div>
+        <form id="message-form" class="form-inline">
+            <input type="text" id="message" class="form-control mr-2" required>
+            <input type="hidden" id="friend-id" value="1"> <!-- Ensure this value is set correctly -->
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
 
-    <div>
-        <input type="text" id="search" placeholder="Search users">
-        <div id="search-results"></div>
+        <div class="mt-4">
+            <input type="text" id="search" class="form-control" placeholder="Search users">
+            <div id="search-results" class="mt-2"></div>
+        </div>
+
+        <div class="mt-4">
+            <a href="notifications.php" class="btn btn-info">Notifications</a>
+        </div>
+
+        <div class="mt-4">
+            <a href="friends_list.php" class="btn btn-info">Friends List</a>
+        </div>
     </div>
 
-    <div>
-        <a href="notifications.php">Notifications</a>
-    </div>
-
-    <div>
-        <a href="friends_list.php">Friends List</a>
-    </div>
-
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         function fetchMessages() {
             fetch('fetch_messages.php')
@@ -61,12 +73,12 @@ if (isset($_SESSION['username'])) {
 
                     data.forEach(message => {
                         const messageElement = document.createElement('div');
-                        messageElement.classList.add('message');
+                        messageElement.classList.add('message', 'border', 'p-2', 'mb-2', 'rounded');
 
                         const pfpElement = document.createElement('img');
                         pfpElement.src = message.pfp;
                         pfpElement.alt = 'Profile Picture';
-                        pfpElement.classList.add('pfp');
+                        pfpElement.classList.add('pfp', 'mr-2');
 
                         const usernameElement = document.createElement('span');
                         usernameElement.classList.add('username');
@@ -131,12 +143,12 @@ if (isset($_SESSION['username'])) {
                         searchResults.style.display = 'block'; // Show the search results container
                         data.forEach(user => {
                             const userElement = document.createElement('div');
-                            userElement.classList.add('user');
+                            userElement.classList.add('user', 'border', 'p-2', 'mb-2', 'rounded');
 
                             const pfpElement = document.createElement('img');
                             pfpElement.src = user.pfp;
                             pfpElement.alt = 'Profile Picture';
-                            pfpElement.classList.add('pfp');
+                            pfpElement.classList.add('pfp', 'mr-2');
 
                             const usernameElement = document.createElement('span');
                             usernameElement.classList.add('username');
@@ -144,6 +156,7 @@ if (isset($_SESSION['username'])) {
 
                             const inviteButton = document.createElement('button');
                             inviteButton.textContent = 'Invite';
+                            inviteButton.classList.add('btn', 'btn-primary', 'ml-2');
                             inviteButton.addEventListener('click', function() {
                                 fetch('send_invite.php', {
                                     method: 'POST',
@@ -174,78 +187,11 @@ if (isset($_SESSION['username'])) {
                 .catch(error => console.error('Error searching users:', error));
         });
 
-        function fetchFriends() {
-            fetch('fetch_friends.php')
-                .then(response => response.json())
-                .then(data => {
-                    const friendsList = document.getElementById('friends-list');
-                    friendsList.innerHTML = ''; // Clear existing friends
-
-                    data.forEach(friend => {
-                        const friendElement = document.createElement('div');
-                        friendElement.classList.add('friend');
-
-                        const pfpElement = document.createElement('img');
-                        pfpElement.src = friend.pfp;
-                        pfpElement.alt = 'Profile Picture';
-                        pfpElement.classList.add('pfp');
-
-                        const usernameElement = document.createElement('span');
-                        usernameElement.classList.add('username');
-                        usernameElement.textContent = friend.username;
-
-                        const chatButton = document.createElement('button');
-                        chatButton.textContent = 'Private Chat';
-                        chatButton.addEventListener('click', function() {
-                            // Set the friend ID for private chat
-                            document.getElementById('friend-id').value = friend.id;
-                            // Optionally, you can redirect to a private chat page
-                            // window.location.href = `private_chat.php?friend_id=${friend.id}`;
-                        });
-
-                        const videoChatButton = document.createElement('button');
-                        videoChatButton.textContent = 'Video Chat';
-                        videoChatButton.addEventListener('click', function() {
-                            // Implement video chat functionality here
-                            alert('Video chat with ' + friend.username);
-                        });
-
-                        friendElement.appendChild(pfpElement);
-                        friendElement.appendChild(usernameElement);
-                        friendElement.appendChild(chatButton);
-                        friendElement.appendChild(videoChatButton);
-
-                        friendsList.appendChild(friendElement);
-                    });
-                })
-                .catch(error => console.error('Error fetching friends:', error));
-        }
-
-        function manageInvite(inviteId, action) {
-            fetch('manage_invites.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `invite_id=${inviteId}&action=${action}`
-            })
-            .then(response => response.text())
-            .then(data => {
-                console.log('Response from manage_invites.php:', data); // Log the response
-                fetchFriends(); // Refresh the friends list
-            })
-            .catch(error => console.error('Error managing invite:', error));
-        }
-
         // Call fetchMessages initially to load messages
         fetchMessages();
 
-        // Call fetchFriends initially to load friends list
-        fetchFriends();
-
-        // Optionally, set an interval to refresh messages and friends list periodically
+        // Optionally, set an interval to refresh messages periodically
         setInterval(fetchMessages, 5000);
-        setInterval(fetchFriends, 10000);
     </script>
 </body>
 </html>
