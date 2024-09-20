@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (password_verify($password, $hashed_password)) {
             $_SESSION['user_id'] = $id;
             $_SESSION['username'] = $username;
-            $_SESSION['pfp'] = $pfp;
+            $_SESSION['pfp'] = $pfp; // Store profile picture in session
             echo "Login successful!";
             header("Location: index.php");
             exit;
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 if (isset($_SESSION['username'])) {
     echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!<br>";
-    echo "<img src='path/to/pfp/" . htmlspecialchars($_SESSION['pfp']) . "' alt='Profile Picture'>";
+    echo "<img src='" . htmlspecialchars($_SESSION['pfp']) . "' alt='Profile Picture'>";
 } else {
 ?>
     <form method="POST" action="login.php">
